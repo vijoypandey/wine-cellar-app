@@ -30,7 +30,7 @@ def create_demo_data():
         
         db.session.commit()
         
-        # Create sample wines
+        # Create sample wines - only user-entered data, let the app scrape the rest
         wines_data = [
             {
                 'name': 'Caymus Cabernet Sauvignon',
@@ -38,13 +38,7 @@ def create_demo_data():
                 'price': 89.99,
                 'store': stores[0],
                 'cellar_name': 'Main Cellar',
-                'rack_number': 'A1',
-                'color': 'Red',
-                'country': 'USA',
-                'region': 'Napa Valley',
-                'grape_varietal': 'Cabernet Sauvignon',
-                'drinking_window': '2024-2035',
-                'ratings_summary': 92.5
+                'rack_number': 'A1'
             },
             {
                 'name': 'Kendall-Jackson Vintners Reserve Chardonnay',
@@ -52,13 +46,7 @@ def create_demo_data():
                 'price': 21.99,
                 'store': stores[1],
                 'cellar_name': 'Main Cellar',
-                'rack_number': 'B3',
-                'color': 'White',
-                'country': 'USA',
-                'region': 'California',
-                'grape_varietal': 'Chardonnay',
-                'drinking_window': '2024-2027',
-                'ratings_summary': 88.0
+                'rack_number': 'B3'
             },
             {
                 'name': 'Opus One',
@@ -66,13 +54,7 @@ def create_demo_data():
                 'price': 450.00,
                 'store': stores[2],
                 'cellar_name': 'Premium Cellar',
-                'rack_number': 'P1',
-                'color': 'Red',
-                'country': 'USA',
-                'region': 'Napa Valley',
-                'grape_varietal': 'Bordeaux Blend',
-                'drinking_window': '2025-2040',
-                'ratings_summary': 96.0
+                'rack_number': 'P1'
             },
             {
                 'name': 'Dom Perignon',
@@ -80,13 +62,7 @@ def create_demo_data():
                 'price': 220.00,
                 'store': stores[3],
                 'cellar_name': 'Champagne Cellar',
-                'rack_number': 'C1',
-                'color': 'White',
-                'country': 'France',
-                'region': 'Champagne',
-                'grape_varietal': 'Chardonnay & Pinot Noir',
-                'drinking_window': '2024-2030',
-                'ratings_summary': 94.5
+                'rack_number': 'C1'
             },
             {
                 'name': 'Silver Oak Alexander Valley Cabernet Sauvignon',
@@ -94,13 +70,7 @@ def create_demo_data():
                 'price': 65.00,
                 'store': stores[4],
                 'cellar_name': 'Main Cellar',
-                'rack_number': 'A5',
-                'color': 'Red',
-                'country': 'USA',
-                'region': 'Alexander Valley',
-                'grape_varietal': 'Cabernet Sauvignon',
-                'drinking_window': '2023-2032',
-                'ratings_summary': 90.0
+                'rack_number': 'A5'
             }
         ]
         
@@ -111,53 +81,16 @@ def create_demo_data():
                 price=wine_data['price'],
                 store_id=wine_data['store'].id,
                 cellar_name=wine_data['cellar_name'],
-                rack_number=wine_data['rack_number'],
-                color=wine_data['color'],
-                country=wine_data['country'],
-                region=wine_data['region'],
-                grape_varietal=wine_data['grape_varietal'],
-                drinking_window=wine_data['drinking_window'],
-                ratings_summary=wine_data['ratings_summary']
+                rack_number=wine_data['rack_number']
             )
             db.session.add(wine)
-        
-        db.session.commit()
-        
-        # Add some sample ratings
-        wines = Wine.query.all()
-        rating_sources = [
-            ('Wine Spectator', 100),
-            ('Robert Parker', 100), 
-            ('Jeb Dunnuck', 100),
-            ('Wine Advocate', 100)
-        ]
-        
-        for wine in wines:
-            # Add 2-4 ratings per wine
-            import random
-            num_ratings = random.randint(2, 4)
-            used_sources = random.sample(rating_sources, num_ratings)
-            
-            for source, max_rating in used_sources:
-                # Generate rating close to the summary rating
-                base_rating = wine.ratings_summary or 85
-                rating_value = base_rating + random.uniform(-3, 3)
-                rating_value = max(80, min(100, rating_value))  # Keep within bounds
-                
-                rating = WineRating(
-                    wine_id=wine.id,
-                    source=source,
-                    rating=rating_value,
-                    max_rating=max_rating
-                )
-                db.session.add(rating)
         
         db.session.commit()
         
         print("✅ Demo data created successfully!")
         print(f"Added {len(stores)} stores")
         print(f"Added {len(wines_data)} wines")
-        print("Added multiple ratings per wine")
+        print("Wine characteristics (color, region, ratings, etc.) will be populated via web scraping when you view the collection or add new wines.")
 
 if __name__ == "__main__":
     create_demo_data()

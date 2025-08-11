@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from models import db, Wine, Store, WineRating
-from wine_scraper import WineScraper
+from trusted_wine_scraper import TrustedWineScraper
 import os
 
 app = Flask(__name__)
@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///wine_cellar.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-scraper = WineScraper()
+scraper = TrustedWineScraper()
 
 @app.route('/')
 def index():
