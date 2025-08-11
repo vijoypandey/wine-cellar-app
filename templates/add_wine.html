@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>Add Wine to Collection</h2>
+        
+        <form method="POST" action="{{ url_for('submit_wine') }}" class="mt-4">
+            <div class="mb-3">
+                <label for="wine_name" class="form-label">Wine Name *</label>
+                <div class="position-relative">
+                    <input type="text" class="form-control" id="wine_name" name="wine_name" required>
+                    <div id="wine_suggestions" class="autocomplete-suggestions"></div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="vintage" class="form-label">Vintage *</label>
+                        <input type="number" class="form-control" id="vintage" name="vintage" 
+                               min="1900" max="2030" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price ($) *</label>
+                        <input type="number" class="form-control" id="price" name="price" 
+                               step="0.01" min="0" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="store_name" class="form-label">Store Bought From *</label>
+                <div class="position-relative">
+                    <input type="text" class="form-control" id="store_name" name="store_name" required>
+                    <div id="store_suggestions" class="autocomplete-suggestions"></div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="cellar_name" class="form-label">Cellar Name *</label>
+                        <input type="text" class="form-control" id="cellar_name" name="cellar_name" 
+                               placeholder="e.g., Main Cellar, Basement, Wine Room" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="rack_number" class="form-label">Rack Number *</label>
+                        <input type="text" class="form-control" id="rack_number" name="rack_number" 
+                               placeholder="e.g., A1, Rack 5, Shelf 2" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> After submitting, the app will automatically search for and add drinking window, 
+                wine color, region, grape varietal, and ratings information.
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Add Wine to Collection</button>
+            <a href="{{ url_for('collection') }}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wine name autocomplete
+    const wineNameInput = document.getElementById('wine_name');
+    const wineSuggestions = document.getElementById('wine_suggestions');
+    
+    wineNameInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 2) {
+            wineSuggestions.innerHTML = '';
+            return;
+        }
+        
+        fetch(`/api/wine_suggestions?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                wineSuggestions.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.textContent = suggestion;
+                    div.onclick = function() {
+                        wineNameInput.value = suggestion;
+                        wineSuggestions.innerHTML = '';
+                    };
+                    wineSuggestions.appendChild(div);
+                });
+            });
+    });
+    
+    // Store name autocomplete
+    const storeNameInput = document.getElementById('store_name');
+    const storeSuggestions = document.getElementById('store_suggestions');
+    
+    storeNameInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        fetch(`/api/store_suggestions?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(suggestions => {
+                storeSuggestions.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-suggestion';
+                    div.textContent = suggestion;
+                    div.onclick = function() {
+                        storeNameInput.value = suggestion;
+                        storeSuggestions.innerHTML = '';
+                    };
+                    storeSuggestions.appendChild(div);
+                });
+            });
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.position-relative')) {
+            wineSuggestions.innerHTML = '';
+            storeSuggestions.innerHTML = '';
+        }
+    });
+});
+</script>
+{% endblock %}

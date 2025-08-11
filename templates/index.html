@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-lg mb-4">
+    <h1 class="display-4">Welcome to Wine Cellar Tracker</h1>
+    <p class="lead">Manage your wine collection across multiple cellars with automatic wine data lookup.</p>
+    <hr class="my-4">
+    <p>Track your wines with details like vintage, price, storage location, and automatically retrieved information including drinking windows, ratings, and wine characteristics.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('add_wine') }}" role="button">Add Your First Wine</a>
+    <a class="btn btn-outline-secondary btn-lg ms-2" href="{{ url_for('collection') }}" role="button">View Collection</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📝 Add Wines</h5>
+                <p class="card-text">Enter wine details with autocomplete suggestions and automatic data lookup.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">🏪 Store Management</h5>
+                <p class="card-text">Track which stores you bought your wines from with automatic suggestions.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📊 Collection Overview</h5>
+                <p class="card-text">View, sort, and filter your entire wine collection by any criteria.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Wine Collection</h2>
+    <a href="{{ url_for('add_wine') }}" class="btn btn-success">Add New Wine</a>
+</div>
+
+<!-- Filters and Sorting -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Filter & Sort</h5>
+        <form method="GET" class="row g-3">
+            <div class="col-md-2">
+                <label for="sort" class="form-label">Sort by</label>
+                <select class="form-select" id="sort" name="sort">
+                    <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name</option>
+                    <option value="vintage" {% if current_sort == 'vintage' %}selected{% endif %}>Vintage</option>
+                    <option value="price" {% if current_sort == 'price' %}selected{% endif %}>Price</option>
+                    <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Rating</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="color" class="form-label">Color</label>
+                <select class="form-select" id="color" name="color">
+                    <option value="">All Colors</option>
+                    <option value="Red" {% if current_filters.color == 'Red' %}selected{% endif %}>Red</option>
+                    <option value="White" {% if current_filters.color == 'White' %}selected{% endif %}>White</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="cellar" class="form-label">Cellar</label>
+                <select class="form-select" id="cellar" name="cellar">
+                    <option value="">All Cellars</option>
+                    {% for cellar in cellars %}
+                    <option value="{{ cellar }}" {% if current_filters.cellar == cellar %}selected{% endif %}>
+                        {{ cellar }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="store" class="form-label">Store</label>
+                <select class="form-select" id="store" name="store">
+                    <option value="">All Stores</option>
+                    {% for store in stores %}
+                    <option value="{{ store.name }}" {% if current_filters.store == store.name %}selected{% endif %}>
+                        {{ store.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Apply</button>
+                <a href="{{ url_for('collection') }}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Wine Collection Table -->
+{% if wines %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Wine Name</th>
+                <th>Vintage</th>
+                <th>Price</th>
+                <th>Store</th>
+                <th>Location</th>
+                <th>Color</th>
+                <th>Region</th>
+                <th>Grape</th>
+                <th>Drinking Window</th>
+                <th>Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wine in wines %}
+            <tr>
+                <td><strong>{{ wine.name }}</strong></td>
+                <td>{{ wine.vintage }}</td>
+                <td>${{ "%.2f"|format(wine.price) }}</td>
+                <td>{{ wine.store.name }}</td>
+                <td>{{ wine.cellar_name }} - {{ wine.rack_number }}</td>
+                <td>
+                    {% if wine.color %}
+                        <span class="badge bg-{% if wine.color == 'Red' %}danger{% else %}warning{% endif %}">
+                            {{ wine.color }}
+                        </span>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if wine.country and wine.region %}
+                        {{ wine.country }}, {{ wine.region }}
+                    {% elif wine.country %}
+                        {{ wine.country }}
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>{{ wine.grape_varietal or '-' }}</td>
+                <td>{{ wine.drinking_window or '-' }}</td>
+                <td>
+                    {% if wine.ratings_summary %}
+                        <span class="badge bg-success">{{ wine.ratings_summary }}/100</span>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-3">
+    <p class="text-muted">Total wines: {{ wines|length }}</p>
+</div>
+
+{% else %}
+<div class="text-center py-5">
+    <h4 class="text-muted">No wines in your collection yet</h4>
+    <p>Start building your wine collection by adding your first wine.</p>
+    <a href="{{ url_for('add_wine') }}" class="btn btn-primary">Add Your First Wine</a>
+</div>
+{% endif %}
+
+{% endblock %}
