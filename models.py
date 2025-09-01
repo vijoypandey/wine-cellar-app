@@ -25,6 +25,12 @@ class Wine(db.Model):
     grape_varietal = db.Column(db.String(200))
     ratings_summary = db.Column(db.Float)  # Average of up to 4 ratings
     
+    # Enhanced drinking window tracking
+    drinking_window_confidence = db.Column(db.String(10))  # 'high', 'medium', 'low'
+    drinking_window_source = db.Column(db.String(50))  # Track data source
+    peak_drinking_year = db.Column(db.Integer)  # Calculated from window
+    window_notes = db.Column(db.String(200))  # Additional context
+    
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

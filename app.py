@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from models import db, Wine, Store, WineRating
 from trusted_wine_scraper import TrustedWineScraper
+from drinking_window_service import DrinkingWindowService
 import os
 
 app = Flask(__name__)
@@ -10,6 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 scraper = TrustedWineScraper()
+drinking_window_service = DrinkingWindowService()
 
 @app.route('/')
 def index():
@@ -84,11 +86,27 @@ def submit_wine():
                 wine_data = scraper.get_mock_wine_data(wine_name, vintage)
             
             # Update wine with scraped data
-            wine.drinking_window = wine_data.get('drinking_window')
             wine.color = wine_data.get('color')
             wine.country = wine_data.get('country')
             wine.region = wine_data.get('region')
             wine.grape_varietal = wine_data.get('grape_varietal')
+            
+            # Get enhanced drinking window data
+            window_data = drinking_window_service.get_drinking_window(
+                wine_name=wine_name,
+                vintage=vintage,
+                grape_varietal=wine_data.get('grape_varietal'),
+                country=wine_data.get('country'),
+                region=wine_data.get('region'),
+                color=wine_data.get('color')
+            )
+            
+            # Update wine with enhanced drinking window info
+            wine.drinking_window = window_data.get('drinking_window')
+            wine.drinking_window_confidence = window_data.get('confidence')
+            wine.drinking_window_source = window_data.get('source')
+            wine.peak_drinking_year = window_data.get('peak_year')
+            wine.window_notes = window_data.get('notes')
             
             # Add ratings
             ratings = wine_data.get('ratings', [])

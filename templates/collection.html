@@ -73,6 +73,7 @@
                 <th>Region</th>
                 <th>Grape</th>
                 <th>Drinking Window</th>
+                <th>Peak Year</th>
                 <th>Rating</th>
             </tr>
         </thead>
@@ -103,7 +104,26 @@
                     {% endif %}
                 </td>
                 <td>{{ wine.grape_varietal or '-' }}</td>
-                <td>{{ wine.drinking_window or '-' }}</td>
+                <td>
+                    {% if wine.drinking_window %}
+                        <div>{{ wine.drinking_window }}</div>
+                        {% if wine.drinking_window_source and wine.drinking_window_confidence %}
+                            <small class="text-muted">
+                                <span class="badge bg-{% if wine.drinking_window_confidence == 'high' %}success{% elif wine.drinking_window_confidence == 'medium' %}warning{% else %}secondary{% endif %}">{{ wine.drinking_window_confidence }}</span>
+                                via {{ wine.drinking_window_source }}
+                            </small>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if wine.peak_drinking_year %}
+                        <strong>{{ wine.peak_drinking_year }}</strong>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
                 <td>
                     {% if wine.ratings_summary %}
                         <span class="badge bg-success">{{ wine.ratings_summary }}/100</span>
