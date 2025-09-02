@@ -658,6 +658,59 @@ class DrinkingWindowService:
                     'notes': 'Chianti Classico estimate'
                 }
         
+        # Spanish wines
+        if country_lower == 'spain' or any(spanish in wine_name_lower for spanish in ['vega sicilia', 'pesquera', 'aalto', 'pingus']):
+            if 'vega sicilia unico' in wine_name_lower:
+                return {
+                    'drinking_window': f"{vintage + 6}-{vintage + 30}",
+                    'confidence': 'medium',
+                    'source': 'Fallback Rules',
+                    'notes': 'Vega Sicilia Unico - premium Spanish wine'
+                }
+            elif 'rioja' in wine_name_lower or 'rioja' in region_lower:
+                if 'gran reserva' in wine_name_lower:
+                    return {
+                        'drinking_window': f"{vintage + 4}-{vintage + 20}",
+                        'confidence': 'medium',
+                        'source': 'Fallback Rules',
+                        'notes': 'Rioja Gran Reserva estimate'
+                    }
+                elif 'reserva' in wine_name_lower:
+                    return {
+                        'drinking_window': f"{vintage + 3}-{vintage + 15}",
+                        'confidence': 'medium',
+                        'source': 'Fallback Rules',
+                        'notes': 'Rioja Reserva estimate'
+                    }
+                else:
+                    return {
+                        'drinking_window': f"{vintage + 2}-{vintage + 10}",
+                        'confidence': 'medium',
+                        'source': 'Fallback Rules',
+                        'notes': 'Rioja wine estimate'
+                    }
+            elif 'ribera del duero' in wine_name_lower or 'ribera del duero' in region_lower:
+                return {
+                    'drinking_window': f"{vintage + 4}-{vintage + 18}",
+                    'confidence': 'medium',
+                    'source': 'Fallback Rules',
+                    'notes': 'Ribera del Duero estimate'
+                }
+            elif any(premium in wine_name_lower for premium in ['pingus', 'dominio de pingus', 'aalto', 'pesquera']):
+                return {
+                    'drinking_window': f"{vintage + 5}-{vintage + 25}",
+                    'confidence': 'medium',
+                    'source': 'Fallback Rules',
+                    'notes': 'Premium Spanish wine estimate'
+                }
+            else:
+                return {
+                    'drinking_window': f"{vintage + 2}-{vintage + 12}",
+                    'confidence': 'medium',
+                    'source': 'Fallback Rules',
+                    'notes': 'Spanish red wine estimate'
+                }
+        
         # Grape varietal-based rules
         if grape_lower:
             if 'cabernet sauvignon' in grape_lower:
